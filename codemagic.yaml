@@ -1,0 +1,35 @@
+workflows:
+  ios-workflow:
+    name: Build IPA Correcto
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Install Pods
+        script: |
+          find . -name "Podfile" -exec dir="{}" \; -exec cd $(dirname {}) \; -exec pod install \;
+      - name: Build iOS App
+        script: |
+          # Construimos la app sin firmar
+          flutter build ios --release --no-codesign
+      - name: Create IPA Structure
+        script: |
+          # Entramos en la carpeta de salida
+          cd build/ios/iphoneos
+          
+          # Creamos la carpeta Payload OBLIGATORIA
+          mkdir Payload
+          
+          # Movemos la app dentro
+          mv Runner.app Payload/
+          
+          # Comprimimos usando zip de Mac (que respeta los permisos)
+          # El nombre será rugby_app.ipa
+          zip -r rugby_app.ipa Payload
+    artifacts:
+      - build/ios/iphoneos/rugby_app.ipa
