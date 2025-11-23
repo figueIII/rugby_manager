@@ -187,4 +187,9 @@ class DataManager extends ChangeNotifier {
     int segundos = segundosPartido % 60;
     return "${minutos.toString().padLeft(2, '0')}:${segundos.toString().padLeft(2, '0')}";
   }
+  // Verificar si hay un partido en curso o datos guardados
+  bool hayPartidoGuardado() {
+    // Consideramos que hay partido si el tiempo es > 0 o hay algún punto
+    return segundosPartido > 0 || puntosBUC > 0 || puntosRival > 0;
+  }
 }
